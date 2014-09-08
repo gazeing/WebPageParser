@@ -67,7 +67,7 @@ public class HtmlPaser {
 		String disqusId = "";
 		String time = "";
 		try{
-	        Document doc = Jsoup.connect("http://www.rebonline.com.au/breaking-news/8095-east-coast-leading-growth").get();
+	        Document doc = Jsoup.connect(htmlPath).get();
 
 	        Elements elementsHtml = doc.getElementsByAttributeValue("itemprop", "articleBody");
 

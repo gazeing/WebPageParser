@@ -50,7 +50,7 @@ public class MainListAdapter extends ArrayAdapter<MainListItem> {
 						public void imageLoaded(Bitmap imageBitmap) {
 							try {
 								imageBitmap = Bitmap.createScaledBitmap(
-										imageBitmap, 100, 100, true);
+										imageBitmap, 200, 200, true);
 							} catch (Exception e) {
 								// MyLog.i(e);
 								return;
@@ -60,6 +60,14 @@ public class MainListAdapter extends ArrayAdapter<MainListItem> {
 						}
 					});
 			if (cachedImage != null) {
+				
+				try {
+					cachedImage = Bitmap.createScaledBitmap(
+							cachedImage, 200, 200, true);
+				} catch (Exception e) {
+					// MyLog.i(e);
+					return null;
+				}
 				imgview.setImageBitmap(cachedImage);
 
 			}

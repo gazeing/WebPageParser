@@ -127,7 +127,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			// below).
 			if (position ==0)
 				return MainListFragment.newInstance(GlobalData.PRELOAD_LIST_URL);
-			return PlaceholderFragment.newInstance(position + 1);
+			switch (position) {
+			case 0:
+				return MainListFragment.newInstance(GlobalData.PRELOAD_LIST_URL);
+			case 1:
+				return MainListFragment.newInstance(GlobalData.FEATURES_LIST_URL);
+			case 2:
+				return MainListFragment.newInstance(GlobalData.BLOG_LIST_URL);
+			}
+			return null;
 		}
 
 		@Override
@@ -143,9 +151,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			case 0:
 				return "News";
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
+				return "Features";
 			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
+				return "Blogs";
 			}
 			return null;
 		}
