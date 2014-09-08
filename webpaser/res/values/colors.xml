@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <color name="blurcolor">#ffffffff</color>
+    
+	<color name="orange">#EE4729</color>
+	<color name="purple">#9F29EE</color>
+	<color name="pink">#EE29D7</color>
+	<color name="blue">#3629EE</color>
+	<color name="green">#24770D</color>
+	<color name="pink_dark">#590D77</color>
+	<color name="orange_dark">#77290D</color>
+	<color name="blue_dark">#0D2277</color>
+	<color name="yellow">#EAE320</color>
+	<color name="blue_sky">#20AAEA</color>
+
+	<color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="gray">#bebebe</color>
+    <color name="light_gray">#dbdbdb</color>
+    <color name="dark_gray">#272828</color>
+    <color name="dim_gray">#696969</color>
+
+    <color name="bgcolor_title">#27b7eb</color>
+    <color name="bgcolor_view">#27b7eb</color>
+    <color name="bgcolor_view_dark">#272828</color>
+    <color name="bgcolor_noti_button">#27b7eb</color>
+    <color name="textcolor_title">#ffffff</color>
+    <color name="textcolor_view">#ffffff</color>
+    <color name="textcolor_dialog">#000000</color>
+
+    <color name="bgcolor_list_white">#f4f5f6</color>
+    <color name="bgcolor_list_gray">#e8eaeb</color>
+    <color name="bgcolor_list_separator">#dbdcdd</color>
+    <color name="bgcolor_list_appname">#4a4a4a</color>
+    <color name="bgcolor_list_appname_dull">#979899</color>
+    
+    <!-- serach screen related -->
+    <color name="bgcolor_search_list_main">#272828</color>		
+    <color name="bgcolor_search_list_alternative">#2B2C2C</color> 
+    <color name="bgcolor_search_list_separator">#232424</color>      
+    <color name="search_list_appname_color">#BEBEBE</color>		
+    
+    <color name="search_bar_inactive_edittxt_bdg_color">#2B2C2C</color>  
+    <color name="search_bar_active_edittxt_bdg_color">#272828</color>  
+    <color name="search_bar_edittxt_hint_color">#424343</color>  
+    <color name="search_list_inactive_bdg_color">#272828</color>  
+    <color name="search_frag_separator_bdg_color">#232424</color>
+    
+    <color name="textcolor_recomm_title">#d4d4d4</color>
+    <color name="textcolor_recomm_text">#a9a9a9</color>
+    
+    <!-- App Widget related -->
+    <color name="wdg_dashboard_color_btn_all">#27b7eb</color>
+    <color name="wdg_dashboard_color_btn_feat">#f4f5f6</color>
+    <color name="wdg_dashboard_color_idle">#000</color>
+    <color name="wdg_dashboard_color_normal_text">#FFF</color>
+    <color name="wdg_dashboard_color_app_shadow">#000</color>
+    <color name="wdg_featured_color_app_btn_bg">#FFF</color>
+    <color name="wdg_featured_color_app_btn_txt">#666</color>
+    <color name="wdg_featured_color_app_desc_txt">#FFF</color>
+    <color name="wdg_dashboard_color_shadowtxt">#000</color>
+    
+    <color name="search_no_results_text_color">#686969</color>
+    
+</resources>
