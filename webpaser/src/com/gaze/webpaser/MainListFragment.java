@@ -241,7 +241,7 @@ public class MainListFragment extends ListFragment implements OnItemClickListene
 		Gson gson = new Gson(); 
 		i.putExtra(GlobalData.MAIN_LIST_ITEM_SERIALABLE, gson.toJson(mlist.get(position)));
 		getActivity().startActivity(i);
-		getActivity().overridePendingTransition(R.anim.right_slide_in, 0);
+		getActivity().overridePendingTransition(R.anim.right_slide_in, R.anim.stay);
 		
 	}
 	

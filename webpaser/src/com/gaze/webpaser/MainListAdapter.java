@@ -19,68 +19,109 @@ public class MainListAdapter extends ArrayAdapter<MainListItem> {
 
 	List<MainListItem> objects;
 	ImageView imgview;
+	 public ImageLoader imageLoader; 
 
 	public MainListAdapter(Context context, List<MainListItem> objects) {
 		super(context, R.layout.item_mainlist, objects);
 		this.objects = objects;
+		
+		 imageLoader = new ImageLoader(context.getApplicationContext());
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		ViewHolder viewHolder = null;
+		
 		if (convertView == null) {
 			LayoutInflater li = (LayoutInflater) this.getContext()
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = li.inflate(R.layout.item_mainlist, null);
+			
+			viewHolder = new ViewHolder();
+			TextView title = (TextView) convertView
+					.findViewById(R.id.textView_title);
+			TextView description = (TextView) convertView
+					.findViewById(R.id.textView_description);
+			TextView time = (TextView) convertView
+					.findViewById(R.id.textView3_time);
+			imgview = (ImageView) convertView.findViewById(R.id.imageView1);
+			
+			viewHolder.image = imgview;
+			viewHolder.title = title;
+			viewHolder.time = time;
+			viewHolder.text = description;
+			
+			convertView.setTag(viewHolder);
+					
 
+		}else{
+			viewHolder = (ViewHolder) convertView.getTag();
 		}
+		
+		
+		
 		MainListItem m = objects.get(position);
-		TextView title = (TextView) convertView
-				.findViewById(R.id.textView_title);
-		TextView description = (TextView) convertView
-				.findViewById(R.id.textView_description);
-		TextView time = (TextView) convertView
-				.findViewById(R.id.textView3_time);
-		imgview = (ImageView) convertView.findViewById(R.id.imageView1);
+//		TextView title = (TextView) convertView
+//				.findViewById(R.id.textView_title);
+//		TextView description = (TextView) convertView
+//				.findViewById(R.id.textView_description);
+//		TextView time = (TextView) convertView
+//				.findViewById(R.id.textView3_time);
+//		imgview = (ImageView) convertView.findViewById(R.id.imageView1);
+//		imgview.setImageResource(R.drawable.ic_launcher);
+		
+		
 
-		try {
-			Bitmap cachedImage = GlobalData.m_Imageloader.loadImage(
-					GlobalData.baseUrl + m.imagePath,
-					new ImageLoadedListener() {
-						@Override
-						public void imageLoaded(Bitmap imageBitmap) {
-							try {
-								imageBitmap = Bitmap.createScaledBitmap(
-										imageBitmap, 200, 200, true);
-							} catch (Exception e) {
-								// MyLog.i(e);
-								return;
-							}
-							imgview.setImageBitmap(imageBitmap);
-							notifyDataSetChanged();
-						}
-					});
-			if (cachedImage != null) {
-				
-				try {
-					cachedImage = Bitmap.createScaledBitmap(
-							cachedImage, 200, 200, true);
-				} catch (Exception e) {
-					// MyLog.i(e);
-					return null;
-				}
-				imgview.setImageBitmap(cachedImage);
+//		try {
+//			Bitmap cachedImage = GlobalData.m_Imageloader.loadImage(
+//					GlobalData.baseUrl + m.imagePath,
+//					new ImageLoadedListener() {
+//						@Override
+//						public void imageLoaded(Bitmap imageBitmap) {
+//							try {
+//								imageBitmap = Bitmap.createScaledBitmap(
+//										imageBitmap, 200, 200, true);
+//							} catch (Exception e) {
+//								e.printStackTrace();
+//								return;
+//							}
+//							imgview.setImageBitmap(imageBitmap);
+//							notifyDataSetChanged();
+//						}
+//					});
+//			if (cachedImage != null) {
+//				
+//				try {
+//					cachedImage = Bitmap.createScaledBitmap(
+//							cachedImage, 200, 200, true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					return null;
+//				}
+////				viewHolder.image.setImageBitmap(cachedImage);
+//
+//			}
+//		} catch (MalformedURLException e) {
+//			// MyLog.i("Bad remote image URL: "+ connection.img+
+//			// e.getMessage());
+//		}
+		
+        ImageView image = viewHolder.image;
+        
+        //DisplayImage function from ImageLoader Class
+        imageLoader.DisplayImage(GlobalData.baseUrl + m.imagePath, image);
 
-			}
-		} catch (MalformedURLException e) {
-			// MyLog.i("Bad remote image URL: "+ connection.img+
-			// e.getMessage());
-		}
-
-		title.setText(m.getTitle());
-		description.setText(Html.fromHtml(m.getIntrotext()));
-		time.setText(TimeUtil.getFormatTime(m.getTime()));
+		viewHolder.title.setText(m.getTitle());
+		viewHolder.text.setText(Html.fromHtml(m.getIntrotext()));
+		viewHolder.time.setText(Util.getFormatTime(m.getTime()));
 
 		return convertView;
+	}
+	
+	static class ViewHolder{
+		ImageView image;
+		TextView title,time,text;
+		
 	}
 
 }

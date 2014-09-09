@@ -8,10 +8,11 @@ public class HtmlContent {
 	String contentText;
 	String imagePath;
 	String disqusId;
+	String htmlResource;
 
 	
 	public HtmlContent(String title, String time, String author,
-			String contentText, String imagePath, String disqusId) {
+			String contentText, String imagePath, String disqusId,String htmlResource) {
 		super();
 		this.title = title;
 		this.time = time;
@@ -19,6 +20,7 @@ public class HtmlContent {
 		this.contentText = contentText;
 		this.imagePath = imagePath;
 		this.disqusId = disqusId;
+		this.htmlResource = htmlResource;
 	}
 
 	public String getTitle() {
@@ -43,6 +45,10 @@ public class HtmlContent {
 
 	public String getAuthor() {
 		return author;
+	}
+
+	public String getHtmlResource() {
+		return htmlResource;
 	}
 	
 	

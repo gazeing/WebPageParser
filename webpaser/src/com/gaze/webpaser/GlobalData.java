@@ -28,7 +28,7 @@ public class GlobalData {
     public static final String MAIN_LIST_ITEM_SERIALABLE = "main_list_item_serialable";
     
 
-    
+    public static final String IMAGE_CACHE_PATH = "pic_load_cache";
     
     // google project id
 //    public static String SENDER_ID = "744563661502";

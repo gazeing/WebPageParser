@@ -6,19 +6,28 @@ import com.gaze.webpaser.HtmlPaser.HtmlPaserFinishListner;
 import com.gaze.webpaser.ImageThreadLoader.ImageLoadedListener;
 import com.google.gson.Gson;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager.LayoutParams;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+@SuppressLint("SetJavaScriptEnabled")
 public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 	
 	
 	TextView titleView, nameView, timeView, textView;
 	ImageView imageView;
+	WebView webview;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +57,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 			return;
 		
 		titleView.setText(m.getTitle());
-		timeView.setText(TimeUtil.getFormatTime(m.getTime()));
+		timeView.setText(Util.getFormatTime(m.getTime()));
 		nameView.setText(m.getAuthor());
 		textView.setText(Html.fromHtml(m.getIntrotext()));
 		
@@ -77,9 +86,11 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 					// MyLog.i(e);
 					return;
 				}
+				imageView.setVisibility(View.VISIBLE);
 				imageView.setImageBitmap(cachedImage);
 
 			}
+			else imageView.setVisibility(View.GONE);
 		} catch (MalformedURLException e) {
 			// MyLog.i("Bad remote image URL: "+ connection.img+
 			// e.getMessage());
@@ -107,7 +118,37 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		if (content == null)
 			return;
 		
-		textView.setText(content.getContentText());
+		textView.setText(Html.fromHtml(content.getContentText()));
+		
+		Log.i("NewsActiviy","load : "+content.getHtmlResource());
+		if(content.getHtmlResource().length()>0){
+//			RelativeLayout.LayoutParams webview_LayoutParams = new RelativeLayout.LayoutParams(
+//					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//			webview_LayoutParams.addRule(RelativeLayout.ABOVE,
+//					R.id.textView_text);
+//			WebView webview = new WebView(this);
+//			webview.setLayoutParams(webview_LayoutParams);
+			webview = (WebView) findViewById(R.id.webView1);
+			webview.setWebViewClient(new WebViewClient(){
+
+				@Override
+				public void onPageFinished(WebView view, String url) {
+					// TODO Auto-generated method stub
+					super.onPageFinished(view, url);
+					Log.i("NewsActiviy",url);
+					webview.setVisibility(View.VISIBLE);
+				}
+				
+			});
+			webview.getSettings().setJavaScriptEnabled(true);
+			
+			webview.loadData(content.getHtmlResource(), "text/html; charset=UTF-8", null);
+			
+//			RelativeLayout root = (RelativeLayout) findViewById(R.id.root);
+//			root.addView(webview);
+		}
+		
+		
 	}
 
 	

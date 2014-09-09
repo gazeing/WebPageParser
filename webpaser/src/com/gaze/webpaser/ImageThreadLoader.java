@@ -87,25 +87,24 @@ public class ImageThreadLoader {
 								}
 							}
 						});
-						// } else if (findImgLocally(item.url.toString()) !=
-						// null) {
-						// // if we can find the img from local storage,
-						// // then we can load it from storage
-						// handler.post(new Runnable() {
-						// public void run() {
-						// if (item.listener != null) {
-						// // get bitmap and give it to listener here
-						// final Bitmap bimp = findImgLocally(item.url
-						// .toString());
-						// if (bimp != null) {
-						// Cache.put(item.url.toString(),
-						// new SoftReference<Bitmap>(bimp));
-						// item.listener.imageLoaded(bimp);
-						// }
-						//
-						// }
-						// }
-						// });
+					} else if (findImgLocally(item.url.toString()) != null) {
+						// if we can find the img from local storage,
+						// then we can load it from storage
+						handler.post(new Runnable() {
+							public void run() {
+								if (item.listener != null) {
+									// get bitmap and give it to listener here
+									final Bitmap bimp = findImgLocally(item.url
+											.toString());
+									if (bimp != null) {
+										Cache.put(item.url.toString(),
+												new SoftReference<Bitmap>(bimp));
+										item.listener.imageLoaded(bimp);
+									}
+
+								}
+							}
+						});
 					} else {
 						final Bitmap bmp = readBitmapFromNetwork(item.url);
 						if (bmp != null) {
@@ -241,14 +240,14 @@ public class ImageThreadLoader {
 				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 		if (pictureFolder == null)
 			return null;
-		File imagesFolder = new File(pictureFolder, "AntCorp_cache");
+		File imagesFolder = new File(pictureFolder, GlobalData.IMAGE_CACHE_PATH);
 		if (!imagesFolder.exists()) {
 			boolean ismaked = imagesFolder.mkdirs();
 			// MyLog.i("imagesFolder.mkdirs()= " + ismaked);
 		}
 		String filePath = Environment.getExternalStoragePublicDirectory(
 				Environment.DIRECTORY_PICTURES).getPath();
-		String name = "/AntCorp_cache/Ant" + TimeUtil.convertStringToMd5(url)
+		String name = "/AntCorp_cache/Ant" + Util.convertStringToMd5(url)
 				+ ".cache";
 		return filePath + name;
 	}

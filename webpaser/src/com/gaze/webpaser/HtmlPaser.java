@@ -66,6 +66,7 @@ public class HtmlPaser {
 		String imagePath= "";
 		String disqusId = "";
 		String time = "";
+		String htmlResouce = "";
 		try{
 	        Document doc = Jsoup.connect(htmlPath).get();
 
@@ -78,10 +79,22 @@ public class HtmlPaser {
 	        	Elements p= element.getElementsByTag("p");
 	        	
 	        	for (Element x: p) {
+	        		
+	        		if(x.html().contains("iframe")){
+	        			
+	        			htmlResouce += "<p>";
+	        			htmlResouce+=x.html();
+	        			htmlResouce+= "</p>";
+	        			
+	        		}else{
+	        		
+	        		t += "<p>";
 	        	
-	                 t +=x.text();;
-	                 t += "\n";
-	                 t += "\n";
+	                 t +=x.html();
+	        		
+	        		t += "</p>";
+	        		}
+
 	                 
 	        	}
 
@@ -95,7 +108,7 @@ public class HtmlPaser {
 	        e.printStackTrace();
 	    }
 		
-		HtmlContent hc = new HtmlContent(title, time, author, t, imagePath, disqusId);
+		HtmlContent hc = new HtmlContent(title, time, author, t, imagePath, disqusId,htmlResouce);
 		
 		return hc;
 	}
