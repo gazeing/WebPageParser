@@ -71,6 +71,8 @@ public class ImageLoader {
             imageView.setImageResource(stub_id);
         }
     }
+    
+
          
     private void queuePhoto(String url, ImageView imageView)
     {
@@ -193,7 +195,7 @@ public class ImageLoader {
           //Find the correct scale value. It should be the power of 2.
           
             // Set width/height of recreated image
-            final int REQUIRED_SIZE=85;
+            final int REQUIRED_SIZE=150;
              
             int width_tmp=o.outWidth, height_tmp=o.outHeight;
             int scale=1;
@@ -208,6 +210,7 @@ public class ImageLoader {
             //decode with current scale values
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize=scale;
+
             FileInputStream stream2=new FileInputStream(f);
             Bitmap bitmap=BitmapFactory.decodeStream(stream2, null, o2);
             stream2.close();

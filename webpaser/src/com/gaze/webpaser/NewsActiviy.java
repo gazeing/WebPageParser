@@ -28,6 +28,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 	TextView titleView, nameView, timeView, textView;
 	ImageView imageView;
 	WebView webview;
+	 public ImageLoader imageLoader; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,10 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		textView = (TextView) findViewById(R.id.textView_text);
 		imageView = (ImageView) findViewById(R.id.imageView1);
 		
+		imageLoader = new ImageLoader(this.getApplicationContext());
 		handleIntent(getIntent());
+		
+		 
 	}
 
 	private void handleIntent(Intent intent) {
@@ -61,40 +65,45 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		nameView.setText(m.getAuthor());
 		textView.setText(Html.fromHtml(m.getIntrotext()));
 		
-		try {
-			Bitmap cachedImage = GlobalData.m_Imageloader.loadImage(
-					GlobalData.baseUrl + m.imagePath,
-					new ImageLoadedListener() {
-						@Override
-						public void imageLoaded(Bitmap imageBitmap) {
-							try {
-								imageBitmap = Bitmap.createScaledBitmap(
-										imageBitmap, 300, 300, true);
-							} catch (Exception e) {
-								// MyLog.i(e);
-								return;
-							}
-							imageView.setImageBitmap(imageBitmap);
-							
-						}
-					});
-			if (cachedImage != null) {
-				try {
-					cachedImage = Bitmap.createScaledBitmap(
-							cachedImage, 300, 300, true);
-				} catch (Exception e) {
-					// MyLog.i(e);
-					return;
-				}
-				imageView.setVisibility(View.VISIBLE);
-				imageView.setImageBitmap(cachedImage);
-
-			}
-			else imageView.setVisibility(View.GONE);
-		} catch (MalformedURLException e) {
-			// MyLog.i("Bad remote image URL: "+ connection.img+
-			// e.getMessage());
-		}
+       
+        
+        //DisplayImage function from ImageLoader Class
+        imageLoader.DisplayImage(GlobalData.baseUrl + m.imagePath, imageView);
+		
+//		try {
+//			Bitmap cachedImage = GlobalData.m_Imageloader.loadImage(
+//					GlobalData.baseUrl + m.imagePath,
+//					new ImageLoadedListener() {
+//						@Override
+//						public void imageLoaded(Bitmap imageBitmap) {
+//							try {
+//								imageBitmap = Bitmap.createScaledBitmap(
+//										imageBitmap, 300, 300, true);
+//							} catch (Exception e) {
+//								// MyLog.i(e);
+//								return;
+//							}
+//							imageView.setImageBitmap(imageBitmap);
+//							
+//						}
+//					});
+//			if (cachedImage != null) {
+//				try {
+//					cachedImage = Bitmap.createScaledBitmap(
+//							cachedImage, 300, 300, true);
+//				} catch (Exception e) {
+//					// MyLog.i(e);
+//					return;
+//				}
+//				imageView.setVisibility(View.VISIBLE);
+//				imageView.setImageBitmap(cachedImage);
+//
+//			}
+//			else imageView.setVisibility(View.GONE);
+//		} catch (MalformedURLException e) {
+//			// MyLog.i("Bad remote image URL: "+ connection.img+
+//			// e.getMessage());
+//		}
 		
 		
 		updateText(m.link);

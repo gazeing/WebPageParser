@@ -1,12 +1,8 @@
 package com.gaze.webpaser;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
-import com.gaze.webpaser.ImageThreadLoader.ImageLoadedListener;
-
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;

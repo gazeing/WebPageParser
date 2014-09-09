@@ -43,7 +43,7 @@ public class GlobalData {
 //    public static final String MENU_LIST_URL = "http://www.rebonline.com.au/steven/json/side_menu.json";
     
     
-    public static ImageThreadLoader m_Imageloader = new ImageThreadLoader();
+//    public static ImageThreadLoader m_Imageloader = new ImageThreadLoader();
     
     
     
