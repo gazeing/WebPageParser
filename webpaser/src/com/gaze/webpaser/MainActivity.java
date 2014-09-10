@@ -134,6 +134,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 				return MainListFragment.newInstance(GlobalData.FEATURES_LIST_URL);
 			case 2:
 				return MainListFragment.newInstance(GlobalData.BLOG_LIST_URL);
+			case 3:
+				return MainListFragment.newInstance(GlobalData.VIDEO_LIST_URL);
+			case 4:
+				return MainListFragment.newInstance(GlobalData.RANKINGS_LIST_URL);
+
 			}
 			return null;
 		}
@@ -141,7 +146,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 3;
+			return 5;
 		}
 
 		@Override
@@ -154,6 +159,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 				return "Features";
 			case 2:
 				return "Blogs";
+			case 3:
+				return "Video";
+			case 4:
+				return "Rankings";
+
 			}
 			return null;
 		}

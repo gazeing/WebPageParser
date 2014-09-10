@@ -39,6 +39,10 @@ public class GlobalData {
     public static final String PRELOAD_LIST_URL ="http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=1";
     public static final String BLOG_LIST_URL = "http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=21";
     public static final String FEATURES_LIST_URL = "http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=51";
+    public static final String VIDEO_LIST_URL = "http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=48";
+    public static final String RANKINGS_LIST_URL = "http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=20";
+    public static final String RESOURCE_LIST_URL = "http://www.rebonline.com.au/?option=com_ajax&format=json&plugin=latestajaxarticlesfromcategory&cat_id=65";
+   
     
 //    public static final String MENU_LIST_URL = "http://www.rebonline.com.au/steven/json/side_menu.json";
     

@@ -60,7 +60,8 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5sp"
                 android:layout_marginBottom="25sp"
-                android:src="@drawable/ic_launcher" />
+                android:src="@drawable/ic_launcher"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView_text"

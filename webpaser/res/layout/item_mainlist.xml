@@ -33,7 +33,7 @@
         android:layout_below="@+id/textView_title"
         android:text="Medium Text"
         android:textColor="@color/black"
-        
+        android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView

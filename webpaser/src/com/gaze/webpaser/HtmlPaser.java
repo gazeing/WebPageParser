@@ -80,17 +80,18 @@ public class HtmlPaser {
 	        	
 	        	for (Element x: p) {
 	        		
-	        		if(x.html().contains("iframe")){
+	        		String html = x.html();
+	        		if(html.contains("iframe")||html.contains("img")){
 	        			
 	        			htmlResouce += "<p>";
-	        			htmlResouce+=x.html();
+	        			htmlResouce+=html;
 	        			htmlResouce+= "</p>";
 	        			
 	        		}else{
 	        		
 	        		t += "<p>";
 	        	
-	                 t +=x.html();
+	                 t +=html;
 	        		
 	        		t += "</p>";
 	        		}

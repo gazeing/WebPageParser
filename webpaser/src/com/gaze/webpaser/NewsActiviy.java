@@ -1,25 +1,24 @@
 package com.gaze.webpaser;
 
-import java.net.MalformedURLException;
-
 import com.gaze.webpaser.HtmlPaser.HtmlPaserFinishListner;
-import com.gaze.webpaser.ImageThreadLoader.ImageLoadedListener;
 import com.google.gson.Gson;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager.LayoutParams;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
@@ -46,8 +45,26 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		imageLoader = new ImageLoader(this.getApplicationContext());
 		handleIntent(getIntent());
 		
+		
+	    gestureDetector = new GestureDetector(this.getApplicationContext(),new SwipeGestureDetector());
+	    gestureListener = new View.OnTouchListener() {
+	        public boolean onTouch(View v, MotionEvent event) {
+	        	v.performClick();
+	            return gestureDetector.onTouchEvent(event);
+	        }
+	    };
+	    
+	    RelativeLayout rootview = (RelativeLayout) findViewById(R.id.root);
+	    rootview.setOnTouchListener(gestureListener);
 		 
 	}
+	
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e)
+    {
+        super.dispatchTouchEvent(e);
+        return gestureDetector.onTouchEvent(e);
+    }
 
 	private void handleIntent(Intent intent) {
 
@@ -70,40 +87,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
         //DisplayImage function from ImageLoader Class
         imageLoader.DisplayImage(GlobalData.baseUrl + m.imagePath, imageView);
 		
-//		try {
-//			Bitmap cachedImage = GlobalData.m_Imageloader.loadImage(
-//					GlobalData.baseUrl + m.imagePath,
-//					new ImageLoadedListener() {
-//						@Override
-//						public void imageLoaded(Bitmap imageBitmap) {
-//							try {
-//								imageBitmap = Bitmap.createScaledBitmap(
-//										imageBitmap, 300, 300, true);
-//							} catch (Exception e) {
-//								// MyLog.i(e);
-//								return;
-//							}
-//							imageView.setImageBitmap(imageBitmap);
-//							
-//						}
-//					});
-//			if (cachedImage != null) {
-//				try {
-//					cachedImage = Bitmap.createScaledBitmap(
-//							cachedImage, 300, 300, true);
-//				} catch (Exception e) {
-//					// MyLog.i(e);
-//					return;
-//				}
-//				imageView.setVisibility(View.VISIBLE);
-//				imageView.setImageBitmap(cachedImage);
-//
-//			}
-//			else imageView.setVisibility(View.GONE);
-//		} catch (MalformedURLException e) {
-//			// MyLog.i("Bad remote image URL: "+ connection.img+
-//			// e.getMessage());
-//		}
+
 		
 		
 		updateText(m.link);
@@ -113,10 +97,17 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 	public void onBackPressed() 
 	{
 
+		closeActivity();
+
+	}
+	
+	private void closeActivity()
+	{
 	    this.finish();
 	    overridePendingTransition(0, R.anim.right_slide_out);
 	}
 
+	@SuppressWarnings("unused")
 	private void updateText(String link) {
 		HtmlPaser p = new HtmlPaser(GlobalData.baseUrl +link, this);
 		
@@ -144,19 +135,70 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 				public void onPageFinished(WebView view, String url) {
 					// TODO Auto-generated method stub
 					super.onPageFinished(view, url);
-					Log.i("NewsActiviy",url);
+					Log.i("NewsActiviy","url loaded: "+url);
 					webview.setVisibility(View.VISIBLE);
 				}
 				
 			});
 			webview.getSettings().setJavaScriptEnabled(true);
 			
-			webview.loadData(content.getHtmlResource(), "text/html; charset=UTF-8", null);
+			webview.loadDataWithBaseURL(GlobalData.baseUrl, content.getHtmlResource(), "text/html; charset=UTF-8", null, null);
 			
 //			RelativeLayout root = (RelativeLayout) findViewById(R.id.root);
 //			root.addView(webview);
 		}
 		
+		
+	}
+	
+	
+	
+    private GestureDetector gestureDetector;
+    View.OnTouchListener gestureListener;
+	
+	private class SwipeGestureDetector extends SimpleOnGestureListener {
+	    private static final int SWIPE_MIN_DISTANCE = 50;
+	    private static final int SWIPE_MAX_OFF_PATH = 200;
+	    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
+	    @Override
+	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+	            float velocityY) {
+	        try {
+//	            Toast t = Toast.makeText(NewsActiviy.this, "Gesture detected", Toast.LENGTH_SHORT);
+//	            t.show();
+	            float diffAbs = Math.abs(e1.getY() - e2.getY());
+	            float diff = e1.getX() - e2.getX();
+
+	            if (diffAbs > SWIPE_MAX_OFF_PATH)
+	                return false;
+
+	            // Left swipe
+	            if (diff > SWIPE_MIN_DISTANCE
+	                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+	                NewsActiviy.this.onLeftSwipe();
+	            } 
+	            // Right swipe
+	            else if (-diff > SWIPE_MIN_DISTANCE
+	                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+	            	NewsActiviy.this.onRightSwipe();
+	            }
+	        } catch (Exception e) {
+	            Log.e("Home", "Error on gestures");
+	        }
+	        return false;
+	    }
+
+	}
+
+
+	public void onLeftSwipe() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onRightSwipe() {
+		closeActivity();
 		
 	}
 

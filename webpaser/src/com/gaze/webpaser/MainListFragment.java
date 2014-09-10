@@ -31,9 +31,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
-public class MainListFragment extends ListFragment implements OnItemClickListener{
+public class MainListFragment extends ListFragment implements OnItemClickListener,OnItemLongClickListener,OnItemSelectedListener{
 	
 	 private static final String LOG_TAG = MainListFragment.class.getSimpleName();
 
@@ -206,6 +209,7 @@ public class MainListFragment extends ListFragment implements OnItemClickListene
 		mAdapter.notifyDataSetChanged();
 		this.getListView().invalidate();
 		this.getListView().setOnItemClickListener(this);
+		this.getListView().setOnItemLongClickListener(this);
 		
 	}
 	
@@ -242,6 +246,36 @@ public class MainListFragment extends ListFragment implements OnItemClickListene
 		i.putExtra(GlobalData.MAIN_LIST_ITEM_SERIALABLE, gson.toJson(mlist.get(position)));
 		getActivity().startActivity(i);
 		getActivity().overridePendingTransition(R.anim.right_slide_in, R.anim.stay);
+		
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		
+		TextView v = (TextView) view.findViewById(R.id.textView_description);
+		if(v.getVisibility() == View.GONE)
+		v.setVisibility(View.VISIBLE);
+		else
+			v.setVisibility(View.GONE);
+		
+		return false;
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+//		TextView v = (TextView) view.findViewById(R.id.textView_description);
+//		if(v.getVisibility() == View.GONE)
+//		v.setVisibility(View.VISIBLE);
+//		else
+//			v.setVisibility(View.GONE);
+		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
+		// TODO Auto-generated method stub
 		
 	}
 	
