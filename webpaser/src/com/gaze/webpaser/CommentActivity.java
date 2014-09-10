@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.WebView;
 import android.widget.RelativeLayout;
@@ -36,12 +37,6 @@ public class CommentActivity extends Activity {
 			return;
 
 		WebView webview = (WebView) findViewById(R.id.webView2);
-		webview.getSettings().setJavaScriptEnabled(true);
-		webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-		webview.getSettings().setSupportMultipleWindows(true);
-
-		webview.loadDataWithBaseURL(GlobalData.baseUrl, disqus,
-				"text/html; charset=UTF-8", null, null);
 		
 		
 		// create popup view container layout
@@ -50,15 +45,26 @@ public class CommentActivity extends Activity {
 				.parseColor("#282A79"));
 		RelativeLayout.LayoutParams browser_LayoutParams = new RelativeLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		browser_LayoutParams.addRule(RelativeLayout.ABOVE,
+		browser_LayoutParams.addRule(RelativeLayout.ALIGN_TOP,
 				R.id.webView2);
 		browserLayout.setLayoutParams(browser_LayoutParams);
 		
 		RelativeLayout root = (RelativeLayout) findViewById(R.id.relative1);
 		root.addView(browserLayout);
+		browserLayout.setVisibility(View.INVISIBLE);
 		
 		DisqusWebviewChromeClient client = new DisqusWebviewChromeClient(browserLayout, this);
 		webview.setWebChromeClient(client);
+		
+		webview.getSettings().setJavaScriptEnabled(true);
+		webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+		webview.getSettings().setSupportMultipleWindows(true);
+
+		webview.loadDataWithBaseURL(GlobalData.baseUrl, disqus,
+				"text/html; charset=UTF-8", null, null);
+		
+		
+
 
 	}
 
