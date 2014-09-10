@@ -27,6 +27,8 @@ public class GlobalData {
     
     public static final String MAIN_LIST_ITEM_SERIALABLE = "main_list_item_serialable";
     
+    public static final String DISQUS_COMMENT = "disqus_comment";
+    
 
     public static final String IMAGE_CACHE_PATH = "pic_load_cache";
     

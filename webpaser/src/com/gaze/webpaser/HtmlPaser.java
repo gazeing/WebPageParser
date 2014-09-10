@@ -103,6 +103,15 @@ public class HtmlPaser {
 	        }
 	        
 	        
+	        //for disqus
+	        doc.getElementsByAttributeValue("id", "jwDisqusBackToTop").remove();
+	        
+	        Elements elementsDisqus = doc.getElementsByAttributeValue("class", "jwDisqusForm");
+	
+	        
+	       
+	        disqusId = elementsDisqus.html();
+	        
 
 	    } catch (IOException e) {
 	        // TODO Auto-generated catch block

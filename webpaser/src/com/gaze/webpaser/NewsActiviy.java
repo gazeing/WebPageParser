@@ -3,14 +3,19 @@ package com.gaze.webpaser;
 import com.gaze.webpaser.HtmlPaser.HtmlPaserFinishListner;
 import com.google.gson.Gson;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -18,7 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 @SuppressLint("SetJavaScriptEnabled")
 public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
@@ -27,7 +32,10 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 	TextView titleView, nameView, timeView, textView;
 	ImageView imageView;
 	WebView webview;
+	String link="";
 	 public ImageLoader imageLoader; 
+	 MainListItem m;
+	 String discus ="";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +52,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		
 		imageLoader = new ImageLoader(this.getApplicationContext());
 		handleIntent(getIntent());
+		getActionBar().setTitle("FAST READ");
 		
 		
 	    gestureDetector = new GestureDetector(this.getApplicationContext(),new SwipeGestureDetector());
@@ -57,6 +66,47 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 	    RelativeLayout rootview = (RelativeLayout) findViewById(R.id.root);
 	    rootview.setOnTouchListener(gestureListener);
 		 
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.news, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+	      // Respond to the action bar's Up/Home button
+	      case android.R.id.home:
+	        closeActivity();
+	        return true;
+		case R.id.action_share:
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("text/plain");
+			i.putExtra(Intent.EXTRA_SUBJECT, titleView.getText());
+			i.putExtra(Intent.EXTRA_TEXT, link);
+			this.startActivity(Intent.createChooser(i, "Share a URL"));
+			return true;
+		case R.id.action_comment:
+			if(discus.length()>0){
+			Intent commentIntent= new Intent(this,CommentActivity.class);
+			
+			commentIntent.putExtra(GlobalData.DISQUS_COMMENT, discus);
+			this.startActivity(commentIntent);
+			this.overridePendingTransition(R.anim.right_slide_in, R.anim.stay);
+			}
+			return true;
+		case R.id.action_fullversion:
+			String url = this.link;
+			Intent url_intent = new Intent(Intent.ACTION_VIEW);
+			url_intent.setData(Uri.parse(url));
+			startActivity(url_intent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	
     @Override
@@ -73,7 +123,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 		
 		String json = intent.getStringExtra(GlobalData.MAIN_LIST_ITEM_SERIALABLE);
 		Gson gson = new Gson();
-		MainListItem m = gson.fromJson(json, MainListItem.class);   
+		m = gson.fromJson(json, MainListItem.class);   
 		if (m==null)
 			return;
 		
@@ -88,7 +138,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
         imageLoader.DisplayImage(GlobalData.baseUrl + m.imagePath, imageView);
 		
 
-		
+		this.link = GlobalData.baseUrl +m.link;
 		
 		updateText(m.link);
 	}
@@ -119,6 +169,8 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
 			return;
 		
 		textView.setText(Html.fromHtml(content.getContentText()));
+		
+		discus = content.getDisqusId();
 		
 		Log.i("NewsActiviy","load : "+content.getHtmlResource());
 		if(content.getHtmlResource().length()>0){
@@ -156,7 +208,7 @@ public class NewsActiviy extends Activity implements HtmlPaserFinishListner {
     private GestureDetector gestureDetector;
     View.OnTouchListener gestureListener;
 	
-	private class SwipeGestureDetector extends SimpleOnGestureListener {
+	public class SwipeGestureDetector extends SimpleOnGestureListener {
 	    private static final int SWIPE_MIN_DISTANCE = 50;
 	    private static final int SWIPE_MAX_OFF_PATH = 200;
 	    private static final int SWIPE_THRESHOLD_VELOCITY = 200;

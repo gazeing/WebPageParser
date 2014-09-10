@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+    <item
+        android:id="@+id/action_websearch"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/action_search"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:title="@string/action_websearch"/>
+        <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_action_share"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_share"/>
+            <item
+        android:id="@+id/action_comment"
+        android:icon="@drawable/ic_action_chat"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_comment"/>
+                <item
+        android:id="@+id/action_fullversion"
+        android:icon="@drawable/ic_action_web_site"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_fullversion"/>
+
+</menu>
