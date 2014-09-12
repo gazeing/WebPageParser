@@ -11,5 +11,6 @@
     <string name="action_websearch">Search</string>
     <string name="action_comment">Comment in Disqus</string>
     <string name="action_fullversion">See the full version</string>
+    <string name="empty_view_text">This is the empty view</string>
 
 </resources>
