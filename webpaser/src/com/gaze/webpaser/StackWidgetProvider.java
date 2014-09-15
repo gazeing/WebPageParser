@@ -16,18 +16,19 @@
 
 package com.gaze.webpaser;
 
-import com.gaze.webpaser.R;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 public class StackWidgetProvider extends AppWidgetProvider {
+	public static final String LOG_TAG = "widget_info";
+	
     public static final String TOAST_ACTION = "com.example.android.stackwidget.TOAST_ACTION";
     public static final String EXTRA_ITEM = "com.example.android.stackwidget.EXTRA_ITEM";
 
@@ -48,6 +49,7 @@ public class StackWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+    	Log.i(LOG_TAG,"onReceive");
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
         if (intent.getAction().equals(TOAST_ACTION)) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -60,6 +62,8 @@ public class StackWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    	Log.i(LOG_TAG,"onUpdate");
+    	
         // update each of the widgets with the remote adapter
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
@@ -87,10 +91,11 @@ public class StackWidgetProvider extends AppWidgetProvider {
 //            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 //            PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
 //                    PendingIntent.FLAG_UPDATE_CURRENT);
-            Intent intentLaunch = new Intent(context, MainActivity.class);
-//            intentLaunch.setAction("android.intent.action.MAIN");
-          PendingIntent toastPendingIntent = PendingIntent.getActivity(context, 0, intentLaunch,
-          PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent toastIntent = new Intent(context, MainActivity.class);
+			PendingIntent toastPendingIntent = PendingIntent.getActivity(context, 0,
+					toastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            
+            
             rv.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);

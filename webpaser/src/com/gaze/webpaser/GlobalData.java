@@ -1,5 +1,7 @@
 package com.gaze.webpaser;
 
+import java.util.ArrayList;
+
 public class GlobalData {
 
 	//baseUrl of our website
@@ -22,6 +24,9 @@ public class GlobalData {
 //    
 //    public static final String JSON_PARSING_FINISH =
 //            "json_finish";
+	
+	//for test
+	public static  ArrayList<MainListItem> globle_list;
     
     public static final String MAIN_LIST_URL = "main_list_url";
     

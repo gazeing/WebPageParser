@@ -210,6 +210,8 @@ public class MainListFragment extends ListFragment implements OnItemClickListene
 		this.getListView().invalidate();
 		this.getListView().setOnItemClickListener(this);
 		this.getListView().setOnItemLongClickListener(this);
+		if(this.listUrl.equals(GlobalData.PRELOAD_LIST_URL))
+			GlobalData.globle_list= mlist;
 		
 	}
 	

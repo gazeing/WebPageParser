@@ -15,9 +15,9 @@
 -->
 <appwidget-provider
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:minWidth="310dip"
+  android:minWidth="230dip"
   android:minHeight="110dip"
-  android:updatePeriodMillis="3600000"
+  android:updatePeriodMillis="600"
   android:previewImage="@drawable/preview"
   android:initialLayout="@layout/widget_layout"
   android:autoAdvanceViewId="@id/stack_view">

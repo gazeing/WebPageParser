@@ -17,12 +17,21 @@
 package com.gaze.webpaser;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.microedition.khronos.opengles.GL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -36,15 +45,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.gaze.webpaser.R;
-
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -56,18 +63,16 @@ public class StackWidgetService extends RemoteViewsService {
 }
 
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private static final int mCount = 5;
-//    private List<WidgetItem> mWidgetItems = new ArrayList<WidgetItem>();
+	public static final String LOG_TAG = "widget_info";
+	
+    private static final int mCount = 10;
+    private List<WidgetItem> mWidgetItems = new ArrayList<WidgetItem>();
     private Context mContext;
     private int mAppWidgetId;
+    ArrayList<MainListItem> mlist = new ArrayList<MainListItem>();
     
-    private static final String LOG_TAG = StackRemoteViewsFactory.class.getSimpleName();
-	String listUrl;
-	ArrayList<MainListItem> mlist = new ArrayList<MainListItem>();
-	
-	InputStream inputStream = null;
-	String result = "";
-	public ImageLoader imageLoader; 
+    MemoryCache memoryCache = new MemoryCache();
+    FileCache fileCache= new FileCache(mContext);
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
@@ -76,149 +81,119 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public void onCreate() {
+    	
+    	Log.i(LOG_TAG,"onCreate");
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-//        for (int i = 0; i < mCount; i++) {
-//            mWidgetItems.add(new WidgetItem(i + "!"));
-//        }
+        for (int i = 0; i < mCount; i++) {
+            mWidgetItems.add(new WidgetItem(i + "!"));
+        }
 
+        if(GlobalData.globle_list.size()>0){
+        	
+        	mlist = GlobalData.globle_list;
+        }
+        
+        
         // We sleep for 3 seconds here to show how the empty view appears in the interim.
         // The empty view is set in the StackWidgetProvider and should be a sibling of the
         // collection view.
-        try {
+//        try {
 //            Thread.sleep(3000);
-        	 imageLoader = new ImageLoader(mContext);
-        	listUrl = GlobalData.PRELOAD_LIST_URL;
-        	fillData();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
-
     
-    private void fillData(){
-		new AsyncTask<String, Void, String>() {
-			
-			
-			@Override
-			protected void onPreExecute() {
-				
-				super.onPreExecute();
-				onStartDataLoading();
+    private void getDatafromNetwork(){
+    	
+    	InputStream inputStream = null;
+    	String result = "";
+    	String listUrl = GlobalData.PRELOAD_LIST_URL;
+    	
+		ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+
+		try {
+			// Set up HTTP post
+
+			// HttpClient is more then less deprecated. Need to change to
+			// URLConnection
+			HttpClient httpClient = new DefaultHttpClient();
+
+			HttpPost httpPost = new HttpPost(listUrl);
+			httpPost.setEntity(new UrlEncodedFormEntity(param));
+			HttpResponse httpResponse = httpClient.execute(httpPost);
+			HttpEntity httpEntity = httpResponse.getEntity();
+
+			Log.i(LOG_TAG, "finish http");
+
+			// Read content & Log
+			inputStream = httpEntity.getContent();
+		} catch (UnsupportedEncodingException e1) {
+			Log.e("UnsupportedEncodingException", e1.toString());
+			e1.printStackTrace();
+		} catch (ClientProtocolException e2) {
+			Log.e("ClientProtocolException", e2.toString());
+			e2.printStackTrace();
+		} catch (IllegalStateException e3) {
+			Log.e("IllegalStateException", e3.toString());
+			e3.printStackTrace();
+		} catch (IOException e4) {
+			Log.e("IOException", e4.toString());
+			e4.printStackTrace();
+		}
+		// Convert response to string using String Builder
+		try {
+			BufferedReader bReader = new BufferedReader(new InputStreamReader(
+					inputStream, "iso-8859-1"), 8);
+			StringBuilder sBuilder = new StringBuilder();
+
+			String line = null;
+			while ((line = bReader.readLine()) != null) {
+				sBuilder.append(line + "\n");
 			}
 
+			inputStream.close();
+			result = sBuilder.toString();
 
-
-			@Override
-			protected String doInBackground(String... params) {
+			Log.i(LOG_TAG, "finish read stream: "+result);
+			if(!isStreamTheTargetJson(result)){
+				result = "";
+				sBuilder.delete(0, sBuilder.length()-1);
+			}
+			
+			//parse json string here
+			if (!result.isEmpty()) {
+				if(result.startsWith("<html>"))
+					return ;
 				
-				ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-
-				try {
-					// Set up HTTP post
-
-					// HttpClient is more then less deprecated. Need to change to
-					// URLConnection
-					HttpClient httpClient = new DefaultHttpClient();
-
-					HttpPost httpPost = new HttpPost(listUrl);
-					httpPost.setEntity(new UrlEncodedFormEntity(param));
-					HttpResponse httpResponse = httpClient.execute(httpPost);
-					HttpEntity httpEntity = httpResponse.getEntity();
-
-					Log.i(LOG_TAG, "finish http");
-
-					// Read content & Log
-					inputStream = httpEntity.getContent();
-				} catch (UnsupportedEncodingException e1) {
-					Log.e("UnsupportedEncodingException", e1.toString());
-					e1.printStackTrace();
-				} catch (ClientProtocolException e2) {
-					Log.e("ClientProtocolException", e2.toString());
-					e2.printStackTrace();
-				} catch (IllegalStateException e3) {
-					Log.e("IllegalStateException", e3.toString());
-					e3.printStackTrace();
-				} catch (IOException e4) {
-					Log.e("IOException", e4.toString());
-					e4.printStackTrace();
+				JSONObject titleJson = new JSONObject(result);
+				JSONArray datajson = titleJson.getJSONArray("data");
+				JSONArray urlQueue = datajson.getJSONArray(0);
+				
+				
+				for (int i = 0; i < urlQueue.length(); i++) {
+					JSONObject item = urlQueue.getJSONObject(i);
+					String url = item.getString("link");
+					String introtext = item.getString("introtext");
+					String title = item.getString("title");
+					String images = item.getString("images");
+					String name = item.getString("name");
+					String time = item.getString("publish_up");
+					if(url!=null){
+//						addToQueue(GlobalData.baseUrl+'/'+url);
+						addToList(url,introtext,title,images,name,time);
+					}
 				}
-				// Convert response to string using String Builder
-				try {
-					BufferedReader bReader = new BufferedReader(new InputStreamReader(
-							inputStream, "iso-8859-1"), 8);
-					StringBuilder sBuilder = new StringBuilder();
-
-					String line = null;
-					while ((line = bReader.readLine()) != null) {
-						sBuilder.append(line + "\n");
-					}
-
-					inputStream.close();
-					result = sBuilder.toString();
-
-					Log.i(LOG_TAG, "finish read stream: "+result);
-					if(!isStreamTheTargetJson(result)){
-						result = "";
-						sBuilder.delete(0, sBuilder.length()-1);
-					}
-					
-					//parse json string here
-					if (!result.isEmpty()) {
-						if(result.startsWith("<html>"))
-							return "";
-						
-						JSONObject titleJson = new JSONObject(result);
-						JSONArray datajson = titleJson.getJSONArray("data");
-						JSONArray urlQueue = datajson.getJSONArray(0);
-						
-						
-						for (int i = 0; i < urlQueue.length(); i++) {
-							JSONObject item = urlQueue.getJSONObject(i);
-							String url = item.getString("link");
-							String introtext = item.getString("introtext");
-							String title = item.getString("title");
-							String images = item.getString("images");
-							String name = item.getString("name");
-							String time = item.getString("publish_up");
-							if(url!=null){
-//								addToQueue(GlobalData.baseUrl+'/'+url);
-								addToList(url,introtext,title,images,name,time);
-							}
-						}
-					}
-					
-				} catch (Exception e) {
-					Log.e("StringBuilding & BufferedReader", "Error converting result "
-							+ e.toString());
-
-				}
-
-				return "";
 			}
 			
-			
-			
-			@Override
-			protected void onPostExecute(String msg) {
-				// mDisplay.append(msg + "\n");
-//				Log.i(LOG_TAG, msg.toString());
-				onFinishDataLoading();
-				
-			}
+		} catch (Exception e) {
+			Log.e("StringBuilding & BufferedReader", "Error converting result "
+					+ e.toString());
 
-		}.execute();
-	}
-	
-    
-	protected void addToList(String url, String introtext, String title,
-			String images, String name, String time) {
-		MainListItem item = new MainListItem(title, name, images, time, url,introtext);
-		mlist.add(item);
-		
-	}
-    
+		}
+    }
 	private boolean isStreamTheTargetJson(String result2) {
 		if(result2==null)
 			return false;
@@ -235,40 +210,34 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 			return false;
 		}
 	}
-    
-    protected void onFinishDataLoading() {
-		// TODO Auto-generated method stub
-    	AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.textView_title);
-	}
-
-	protected void onStartDataLoading() {
-		// TODO Auto-generated method stub
+	protected void addToList(String url, String introtext, String title,
+			String images, String name, String time) {
+		MainListItem item = new MainListItem(title, name, images, time, url,introtext);
+		mlist.add(item);
 		
 	}
-
-
-
-	public void onDestroy() {
+    public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
-//        mWidgetItems.clear();
-        mlist.clear();
+        mWidgetItems.clear();
     }
 
     public int getCount() {
-        return mlist.size();
+//        return mCount;
+    	return mlist.size();
     }
 
     public RemoteViews getViewAt(int position) {
+    	
+    	Log.i(LOG_TAG,"getViewAt " + position);
         // position will always range from 0 to getCount() - 1.
 
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
-//        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-//        rv.setTextViewText(R.id.widget_item, mWidgetItems.get(position).text);
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.item_widget);
-        rv.setTextViewText(R.id.textView_title, mlist.get(position).title);
-        rv.setTextViewText(R.id.textView_time, mlist.get(position).time);
+        rv.setTextViewText(R.id.textView_title, mlist.get(position).getTitle());
+        String time = Util.getFormatTime(mlist.get(position).getTime());
+        rv.setTextViewText(R.id.textView3_time,time);
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
@@ -282,14 +251,16 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // process an image, fetch something from the network, etc., it is ok to do it here,
         // synchronously. A loading view will show up in lieu of the actual contents in the
         // interim.
-        try {
-            System.out.println("Loading view " + position);
+//        try {
+//            System.out.println("Loading view " + position);
 //            Thread.sleep(500);
-//           imageLoader
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        Bitmap bitmap = getBitmap(GlobalData.baseUrl+mlist.get(position).getImagePath());
+        if (bitmap != null)
+        	rv.setImageViewBitmap(R.id.imageView1, bitmap);
+        
         // Return the remote views object.
         return rv;
     }
@@ -319,5 +290,100 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // from the network, etc., it is ok to do it here, synchronously. The widget will remain
         // in its current state while work is being done here, so you don't need to worry about
         // locking up the widget.
+    }
+    
+    
+    private Bitmap getBitmap(String url)
+    {
+        File f=fileCache.getFile(url);
+         
+        //from SD cache
+        //CHECK : if trying to decode file which not exist in cache return null
+        Bitmap b = decodeFile(f);
+        if(b!=null)
+            return b;
+         
+        // Download image file from web
+        try {
+             
+            Bitmap bitmap=null;
+            URL imageUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setInstanceFollowRedirects(true);
+            InputStream is=conn.getInputStream();
+             
+            // Constructs a new FileOutputStream that writes to file
+            // if file not exist then it will create file
+            OutputStream os = new FileOutputStream(f);
+             
+            // See Utils class CopyStream method
+            // It will each pixel from input stream and
+            // write pixels to output stream (file)
+            Util.CopyStream(is, os);
+             
+            os.close();
+            conn.disconnect();
+             
+            //Now file created and going to resize file with defined height
+            // Decodes image and scales it to reduce memory consumption
+            bitmap = decodeFile(f);
+             
+            return bitmap;
+             
+        } catch (Throwable ex){
+           ex.printStackTrace();
+           if(ex instanceof OutOfMemoryError)
+               memoryCache.clear();
+           return null;
+        }
+    }
+    
+
+    
+ 
+    //Decodes image and scales it to reduce memory consumption
+    private Bitmap decodeFile(File f){
+         
+        try {
+             
+            //Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            FileInputStream stream1=new FileInputStream(f);
+            BitmapFactory.decodeStream(stream1,null,o);
+            stream1.close();
+             
+          //Find the correct scale value. It should be the power of 2.
+          
+            // Set width/height of recreated image
+            final int REQUIRED_SIZE=150;
+             
+            int width_tmp=o.outWidth, height_tmp=o.outHeight;
+            int scale=1;
+            while(true){
+                if(width_tmp/2 < REQUIRED_SIZE || height_tmp/2 < REQUIRED_SIZE)
+                    break;
+                width_tmp/=2;
+                height_tmp/=2;
+                scale*=2;
+            }
+             
+            //decode with current scale values
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize=scale;
+
+            FileInputStream stream2=new FileInputStream(f);
+            Bitmap bitmap=BitmapFactory.decodeStream(stream2, null, o2);
+            stream2.close();
+            return bitmap;
+             
+        } catch (FileNotFoundException e) {
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
