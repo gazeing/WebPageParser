@@ -55,7 +55,12 @@ public class StackWidgetProvider extends AppWidgetProvider {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
             int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+            Intent i = new Intent();
+            i.setClassName("com.gaze.webpaser", "com.gaze.webpaser.MainActivity");
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.putExtra("id", viewIndex);
+            context.startActivity(i);
         }
         super.onReceive(context, intent);
     }
@@ -85,15 +90,16 @@ public class StackWidgetProvider extends AppWidgetProvider {
             // cannot setup their own pending intents, instead, the collection as a whole can
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
-//            Intent toastIntent = new Intent(context, StackWidgetProvider.class);
-//            toastIntent.setAction(StackWidgetProvider.TOAST_ACTION);
-//            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
-//            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-//            PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
-//                    PendingIntent.FLAG_UPDATE_CURRENT);
-            Intent toastIntent = new Intent(context, MainActivity.class);
-			PendingIntent toastPendingIntent = PendingIntent.getActivity(context, 0,
-					toastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent toastIntent = new Intent(context, StackWidgetProvider.class);
+            toastIntent.setAction(StackWidgetProvider.TOAST_ACTION);
+            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+//            Intent toastIntent = new Intent(context, MainActivity.class);
+//            toastIntent.putExtra("id", i);
+//			PendingIntent toastPendingIntent = PendingIntent.getActivity(context, 0,
+//					toastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             
             
             rv.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
